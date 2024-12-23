@@ -51,19 +51,19 @@ jobs:
         run: |
           pwd
           cd ./engine-lottie
+          pnpm link ../packages/galacean
           pnpm install
           ls .
-          pnpm link ../packages/galacean
           pnpm build
 
       - name: Install and Link Engine and Build for Toolkit
         run: |
           pwd
+          pnpm link ../packages/galacean
           cd ./engine-toolkit
           pwd
           pnpm install
           ls .
-          pnpm link ../packages/galacean
           pnpm b:all
 
 
