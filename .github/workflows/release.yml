@@ -51,7 +51,7 @@ jobs:
       - name: Install and Link Engine and Build for Toolkit
         working-directory: ./engine-toolkit
         run: |
-          pnpm install --ignore-workspace
+          pnpm install
           pnpm link ../packages/galacean
           pnpm b:all
 
