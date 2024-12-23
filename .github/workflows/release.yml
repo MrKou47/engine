@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: '>=22.6.0'
           registry-url: https://registry.npmjs.org/
+          cache: pnpm
 
       - name: Build Engine
         run: pnpm b:all
@@ -47,30 +48,24 @@ jobs:
           git clone https://github.com/galacean/engine-lottie.git
           git clone https://github.com/galacean/engine-spine.git
 
-      - name: Install and Link Engine and Build for Lottie
-        run: |
-          pwd
-          cd ./engine-lottie
-          pnpm link ../packages/galacean
-          pnpm install
-          ls .
-          pnpm build
-
       - name: Install and Link Engine and Build for Toolkit
+        working-directory: ./engine-toolkit
         run: |
-          pwd
+          pnpm install --ignore-workspace
           pnpm link ../packages/galacean
-          cd ./engine-toolkit
-          pwd
-          pnpm install
-          ls .
           pnpm b:all
 
+      - name: Install and Link Engine and Build for Lottie
+        working-directory: ./engine-lottie
+        run: |
+          pnpm install --ignore-workspace
+          pnpm link ../packages/galacean
+          pnpm build
 
       - name: Install and Link Engine and Build for Spine
         working-directory: ./engine-spine
         run: |
-          pnpm install
+          pnpm install --ignore-workspace
           pnpm link ../packages/galacean
           pnpm build
 
@@ -80,10 +75,11 @@ jobs:
       # Create a mock package.json to specify the path and version of the adapter build result when syncing with the CDN later.
       # name is set to @galacean/engine-platform-adapter-release to avoid conflicts with the real package.json
       # version is set to the version of the engine package
-      - name: Create package.json in platform-adapter
+      - name: Create package.json for platform-adapter
         run: |
           VERSION=$(jq -r '.version' ${{ github.workspace }}/packages/galacean/package.json)
           echo "{\"name\": \"@galacean/engine-platform-adapter-release\", \"version\": \"$VERSION\"}" > ${{ github.workspace }}/platform-adapter/package.json
+          cat ${{ github.workspace }}/platform-adapter/package.json
 
       - name: Bundle polyfill and engine
         uses: galacean/platform-adapter@main
